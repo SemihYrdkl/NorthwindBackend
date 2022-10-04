@@ -1,41 +1,57 @@
 ﻿using Business.Abstract;
+using Business.Constants;
+using Core.Utilities.Result;
+using DataAccess.Abstract;
 using Entities.Concrete;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Business.Concrete
 {
     public class ProductManager : IProductService
     {
-        public void Add(Product product)
+        private IProductDal _productDal;
+
+        public ProductManager(IProductDal productDal)
         {
-            throw new NotImplementedException();
+            _productDal = productDal;
         }
 
-        public void Delete(Product product)
+        public IResult Add(Product product)
         {
-            throw new NotImplementedException();
+            ///business code
+            _productDal.Add(product);
+            return new SuccessResult(Messages.ProductAdded);
         }
 
-        public Product GetById(int productId)
+        public IResult Delete(Product product)
         {
-            throw new NotImplementedException();
+            _productDal.Delete(product);
+            return new SuccessResult(Messages.ProductDeleted);
         }
 
-        public List<Product> GetList()
+        public IDataResult<Product> GetById(int productId)
         {
-            throw new NotImplementedException();
+
+            return new SuccessDataResult<Product>(_productDal.Get(filter: p => p.ProductId == productId));
         }
 
-        public List<Product> GetListByCategory(int categoryid)
+        public IDataResult<List<Product>> GetList()
         {
-            throw new NotImplementedException();
+            return new SuccessDataResult<List<Product>>(_productDal.GetList().ToList());
         }
 
-        public void Update(Product product)
+        public IDataResult<List<Product>> GetListByCategory(int categoryid)
         {
-            throw new NotImplementedException();
+            return new SuccessDataResult<List<Product>>(_productDal.GetList(filter: p => p.CategoryId == categoryid).ToList());
+        }
+
+        public IResult Update(Product product)
+        {
+            _productDal.Update(product);
+            return new SuccessResult(Messages.ProductUpdated);
         }
     }
 }
